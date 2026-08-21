@@ -1,0 +1,139 @@
+$date
+	Fri Aug 21 14:50:56 2026
+$end
+$version
+	Icarus Verilog
+$end
+$timescale
+	1ps
+$end
+$scope module tb_program_counter $end
+$var wire 32 ! pc_next [31:0] $end
+$var wire 32 " pc [31:0] $end
+$var reg 1 # clk $end
+$var reg 1 $ rst $end
+$scope module uut $end
+$var wire 1 # clk $end
+$var wire 32 % pc_next [31:0] $end
+$var wire 1 $ rst $end
+$var reg 32 & pc [31:0] $end
+$upscope $end
+$upscope $end
+$enddefinitions $end
+$comment Show the parameter values. $end
+$dumpall
+$end
+#0
+$dumpvars
+bx &
+bx %
+1$
+0#
+bx "
+bx !
+$end
+#5000
+b100 !
+b100 %
+b0 "
+b0 &
+1#
+#10000
+0#
+#15000
+b1000 !
+b1000 %
+b100 "
+b100 &
+1#
+0$
+#20000
+0#
+#25000
+b1100 !
+b1100 %
+b1000 "
+b1000 &
+1#
+#30000
+0#
+#35000
+b10000 !
+b10000 %
+b1100 "
+b1100 &
+1#
+#40000
+0#
+#45000
+b10100 !
+b10100 %
+b10000 "
+b10000 &
+1#
+#50000
+0#
+#55000
+b11000 !
+b11000 %
+b10100 "
+b10100 &
+1#
+#60000
+0#
+#65000
+b11100 !
+b11100 %
+b11000 "
+b11000 &
+1#
+#70000
+0#
+#75000
+b100000 !
+b100000 %
+b11100 "
+b11100 &
+1#
+#80000
+0#
+#85000
+b100100 !
+b100100 %
+b100000 "
+b100000 &
+1#
+#90000
+0#
+#95000
+b100 !
+b100 %
+b0 "
+b0 &
+1#
+1$
+#100000
+0#
+#105000
+b1000 !
+b1000 %
+b100 "
+b100 &
+1#
+0$
+#110000
+0#
+#115000
+b1100 !
+b1100 %
+b1000 "
+b1000 &
+1#
+#120000
+0#
+#125000
+b10000 !
+b10000 %
+b1100 "
+b1100 &
+1#
