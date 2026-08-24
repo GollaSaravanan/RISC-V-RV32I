@@ -14,7 +14,7 @@ It gives engineers and students total freedom to build custom processors from sc
 
 ---
 
-## Phase 1: Program Counter (PC) - RISC-V Journey
+## Phase1: Program Counter (PC) - RISC-V Journey
 
 ### What we did today
 * Got Icarus Verilog and GTKWave working on Windows and fixed the system PATH so commands run smoothly in the terminal.
@@ -35,7 +35,7 @@ It gives engineers and students total freedom to build custom processors from sc
 
 ---
 
-## Phase 2: Instruction Memory (ROM) - RISC-V Journey
+## Phase2: Instruction Memory (ROM) - RISC-V Journey
 
 ### What we did today
 * Built our second module (`instruction_memory.v`), which acts as the processor's ROM storage.
@@ -55,7 +55,7 @@ It gives engineers and students total freedom to build custom processors from sc
 
 ---
 
-## Phase 3: Register File - RISC-V Journey
+## Phase3: Register File - RISC-V Journey
 
 ### What we did today
 * Built the core storage scratchpad (`register_file.v`) with 32 general-purpose registers (`x0` to `x31`).
@@ -72,3 +72,23 @@ It gives engineers and students total freedom to build custom processors from sc
 * Compile code: `iverilog -o sim_rf.vvp register_file.v tb_register_file.v`
 * Run simulation: `vvp sim_rf.vvp`
 * Open waveform viewer: `gtkwave waveform_rf.vcd`
+
+---
+
+## Phase4: Instruction Decoder & Immediate Generator - RISC-V Journey
+
+### What we did today
+* Built `instruction_decoder.v` to parse raw 32-bit instruction words into standard RISC-V control fields.
+* Extracted opcode, rd, funct3, rs1, rs2, and funct7 using fixed bit slicing.
+* Implemented sign-extension logic for I-Type, S-Type, B-Type, U-Type, and J-Type formats.
+* Wrote `tb_instruction_decoder.v` and verified immediate reconstruction across different instruction types in GTKWave.
+
+### Key concepts we learned
+* **Fixed Field Positions:** RISC-V architectures intentionally keep register indexes (`rs1`, `rs2`, `rd`) at the same bit positions across all instruction formats, allowing hardware decoders to slice them in parallel without complex routing.
+* **Sign Extension (`{{20{instruction[31]}}, ...}`):** Immediate numbers are signed 2's complement values. Hardware duplicates the sign bit (bit 31) across the upper bits to expand 12-bit or 20-bit values to 32 bits without changing their numeric value.
+* **S-Type / B-Type Bit Splitting:** Because the immediate fields are split across different parts of the instruction word to keep register bit locations fixed, the decoder stitches these slices back into a continuous number using Verilog concatenation (`{}`).
+
+### Commands we used
+* Compile code: `iverilog -o sim_id.vvp instruction_decoder.v tb_instruction_decoder.v`
+* Run simulation: `vvp sim_id.vvp`
+* Open waveform viewer: `gtkwave waveform_id.vcd`
