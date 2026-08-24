@@ -14,7 +14,7 @@ It gives engineers and students total freedom to build custom processors from sc
 
 ---
 
-## Day 1: Program Counter (PC) - RISC-V Journey
+## Phase 1: Program Counter (PC) - RISC-V Journey
 
 ### What we did today
 * Got Icarus Verilog and GTKWave working on Windows and fixed the system PATH so commands run smoothly in the terminal.
@@ -35,7 +35,7 @@ It gives engineers and students total freedom to build custom processors from sc
 
 ---
 
-## Day 2: Instruction Memory (ROM) - RISC-V Journey
+## Phase 2: Instruction Memory (ROM) - RISC-V Journey
 
 ### What we did today
 * Built our second module (`instruction_memory.v`), which acts as the processor's ROM storage.
@@ -52,3 +52,23 @@ It gives engineers and students total freedom to build custom processors from sc
 * Compile code: `iverilog -o sim_im.vvp instruction_memory.v tb_instruction_memory.v`
 * Run simulation: `vvp sim_im.vvp`
 * Open waveform viewer: `gtkwave waveform_im.vcd`
+
+---
+
+## Phase 3: Register File - RISC-V Journey
+
+### What we did today
+* Built the core storage scratchpad (`register_file.v`) with 32 general-purpose registers (`x0` to `x31`).
+* Implemented dual asynchronous read ports (`rs1_data`, `rs2_data`) and a single synchronous write port (`rd_data`).
+* Hardwired register `x0` permanently to zero so that any write attempts to `x0` are discarded.
+* Wrote `tb_register_file.v` and verified simultaneous reads, writes, and `x0` lock in GTKWave.
+
+### Key concepts we learned
+* **Dual Read / Single Write:** Hardware often requires two operands at once (e.g. `add x3, x1, x2`), meaning reading must happen immediately through combinational logic, while writing occurs only on the rising clock edge (`posedge clk`) when `reg_write` is enabled.
+* **Hardwired Zero (`x0`):** In RISC-V, `x0` is permanently tied to `0x00000000` to simplify operations (like creating a `nop` or moving registers).
+* **5-bit Addressing:** Since $2^5 = 32$, we only need 5 bits (`[4:0]`) to select any of the 32 registers.
+
+### Commands we used
+* Compile code: `iverilog -o sim_rf.vvp register_file.v tb_register_file.v`
+* Run simulation: `vvp sim_rf.vvp`
+* Open waveform viewer: `gtkwave waveform_rf.vcd`
