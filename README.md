@@ -14,7 +14,7 @@ It gives engineers and students total freedom to build custom processors from sc
 
 ---
 
-## Phase1: Program Counter (PC) - RISC-V Journey
+## Phase 1: Program Counter (PC) - RISC-V Journey
 
 ### What we did today
 * Got Icarus Verilog and GTKWave working on Windows and fixed the system PATH so commands run smoothly in the terminal.
@@ -35,7 +35,7 @@ It gives engineers and students total freedom to build custom processors from sc
 
 ---
 
-## Phase2: Instruction Memory (ROM) - RISC-V Journey
+## Phase 2: Instruction Memory (ROM) - RISC-V Journey
 
 ### What we did today
 * Built our second module (`instruction_memory.v`), which acts as the processor's ROM storage.
@@ -55,7 +55,7 @@ It gives engineers and students total freedom to build custom processors from sc
 
 ---
 
-## Phase3: Register File - RISC-V Journey
+## Phase 3: Register File - RISC-V Journey
 
 ### What we did today
 * Built the core storage scratchpad (`register_file.v`) with 32 general-purpose registers (`x0` to `x31`).
@@ -75,7 +75,7 @@ It gives engineers and students total freedom to build custom processors from sc
 
 ---
 
-## Phase4: Instruction Decoder & Immediate Generator - RISC-V Journey
+## Phase 4: Instruction Decoder & Immediate Generator - RISC-V Journey
 
 ### What we did today
 * Built `instruction_decoder.v` to parse raw 32-bit instruction words into standard RISC-V control fields.
@@ -92,3 +92,24 @@ It gives engineers and students total freedom to build custom processors from sc
 * Compile code: `iverilog -o sim_id.vvp instruction_decoder.v tb_instruction_decoder.v`
 * Run simulation: `vvp sim_id.vvp`
 * Open waveform viewer: `gtkwave waveform_id.vcd`
+
+---
+
+## Phase 5: Arithmetic Logic Unit (ALU) - RISC-V Journey
+
+### What we did today
+* Built `alu.v` to execute all RV32I mathematical, logical, shifting, and comparison operations.
+* Implemented a 4-bit ALU control code multiplexer to route operations based on instruction requirements.
+* Handled signed arithmetic shifts (`>>>`) and distinct signed (`SLT`) vs unsigned (`SLTU`) magnitude comparisons.
+* Added an active-high `zero` flag to detect when a result is zero for branch decisions.
+* Wrote `tb_alu.v` and verified every arithmetic and logical operation in GTKWave.
+
+### Key concepts we learned
+* **Shift Bit Truncation (`b[4:0]`):** In a 32-bit CPU, shifting by 32 or more is invalid or redundant, so the hardware only reads the lower 5 bits of operand B ($2^5 = 32$).
+* **Signed vs Unsigned Operations:** Signed arithmetic uses 2's complement (`$signed(...)`), while unsigned operations treat bit vectors purely by binary magnitude.
+* **Zero Flag:** Serves as the comparison output for conditional branches (like evaluating `beq` by computing `rs1 - rs2 == 0`).
+
+### Commands we used
+* Compile code: `iverilog -o sim_alu.vvp alu.v tb_alu.v`
+* Run simulation: `vvp sim_alu.vvp`
+* Open waveform viewer: `gtkwave waveform_alu.vcd`
