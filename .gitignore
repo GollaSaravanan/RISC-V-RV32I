@@ -1,0 +1,13 @@
+# Icarus Verilog compiled simulation binaries
+*.vvp
+sim.vvp
+sim_*.vvp
+
+# GTKWave simulation trace dumps
+*.vcd
+waveform.vcd
+waveform_*.vcd
+
+# Temporary and editor files
+.DS_Store
+*.tmp

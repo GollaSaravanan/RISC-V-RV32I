@@ -174,3 +174,79 @@ It gives engineers and students total freedom to build custom processors from sc
 * Compile code: `iverilog -o sim_core.vvp program_counter.v instruction_memory.v instruction_decoder.v control_unit.v register_file.v alu.v data_memory.v riscv_core.v tb_riscv_core.v`
 * Run simulation: `vvp sim_core.vvp`
 * Open waveform viewer: `gtkwave waveform_core.vcd`
+
+---
+
+## Processor Architecture & Datapath
+
+      +-------------------------------------------------------------------------+
+      |                                                                         |
+      v                                                                         |
+ +----------+   +----------+   +-------------------+                            |
+ | Next PC  |-->| Program  |-->| Instruction Memory|                            |
+ | MUX      |   | Counter  |   | (ROM)             |                            |
+ +----------+   +----------+   +---------+---------+                            |
+      ^                             |                                           |
+      |                             v                                           |
+      |                   +-------------------+                                 |
+      |                   |Instruction Decoder|                                 |
+      |                   +---+-------+---+---+                                 |
+      |                       |       |   |   |                                 |
+      |      +----------------+       |   |   +--------------------+            |
+      |      |  (Opcode/Funct)        |   | (rs1/rs2/rd)           |            |
+      |      v                        |   v                        v            |
+      | +--------------+              | +---------------+    +--------------+   |
+      | | Main Control |              | | Register File |    | Immediate    |   |
+      | | Unit         |              | +---+-------+---+    | Generator    |   |
+      | +---+------+---+              |     |       |        +-------+------+   |
+      |     |      |                  | rs1 |   rs2 |                |          |
+      |  Branch  ALUSrc               | data|   data|                | imm_ext  |
+      |     |      |                  |     |   +---+----+           |          |
+      |     |      +---------+        |     |   |        v           |          |
+      |     |                |        |     |   |   +----------+     |          |
+      |     |                v        |     |   |   | ALUSrc   |<----+          |
+      |     |          +-----------+  |     |   |   | MUX      |                |
+      |     |          | ALU Ctrl  |  |     |   |   +----+-----+                |
+      |     |          +-----+-----+  |     |   |        |                      |
+      |     |                |        v     |   v        v                      |
+      |     |                |      +-------+-----+----+                        |
+      |     |                +----->| Arithmetic  |    |                        |
+      |     |                       | Logic Unit  |    |                        |
+      |     |                       +---+---------+----+                        |
+      |     |                           |         | (Zero flag)                 |
+      |     +-------------------+       |         v                             |
+      |                         |       |       +----+                          |
+      |                         v       |       |AND |                          |
+      |                     +-------+   |       +--+-+                          |
+      +---------------------|PC Branch  |          | pc_sel                     |
+      |                     |Adder  |   |          v                            |
+      |                     +-------+   |       +------+                        |
+      |                                 |       |Branch|------------------------+
+      |                                 |       |Logic |
+      |                                 v       +------+
+      |                         +---------------+
+      |                         |  Data Memory  |
+      |                         |     (RAM)     |
+      |                         +-------+-------+
+      |                                 |
+      |       +--------------+          |
+      |       | MemtoReg MUX |<---------+
+      |       +-------+------+ (Selects RAM read or ALU result)
+      |               |
+      +---------------+ (Writeback data to rd)
+
+### Core Hardware Specifications
+* **ISA:** RISC-V RV32I Base Integer
+* **Architecture:** Single-Cycle Datapath
+* **Word Width:** 32-bit (Registers, Memory, Datapath, PC)
+* **Registers:** 32 General Purpose Registers (`x0` to `x31`, `x0` locked to zero)
+* **Supported Instructions:** `addi`, `add`, `sub`, `and`, `or`, `xor`, `sll`, `srl`, `sra`, `slt`, `sltu`, `lw`, `sw`, `beq`, `lui`
+
+---
+
+## Automated Test Suite
+
+Run all component testbenches and the integrated core test in sequence:
+
+```powershell
+.\run_all.ps1
