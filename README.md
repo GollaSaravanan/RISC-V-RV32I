@@ -154,3 +154,23 @@ It gives engineers and students total freedom to build custom processors from sc
 * Compile code: `iverilog -o sim_cu.vvp control_unit.v tb_control_unit.v`
 * Run simulation: `vvp sim_cu.vvp`
 * Open waveform viewer: `gtkwave waveform_cu.vcd`
+
+---
+
+## Phase 8: Top-Level Integration & Full Processor Simulation - RISC-V Journey
+
+### What we did
+* Integrated all individual modules into a complete single-cycle processor core in `riscv_core.v`.
+* Built the datapath multiplexers for ALU operands, writeback data sources, and branch target program counter selection.
+* Pre-loaded an end-to-end assembly program testing arithmetic (`addi`, `add`), memory storage and retrieval (`sw`, `lw`), and conditional branching (`beq`).
+* Wrote `tb_riscv_core.v`, simulated the complete processor execution, and verified cycle-by-cycle register updates and branching in GTKWave.
+
+### Key concepts we learned
+* **Single-Cycle Datapath Execution:** Every instruction completes in a single clock cycle across Fetch, Decode, Execute, Memory, and Writeback stages.
+* **Datapath Multiplexing:** Hardware multiplexers route data dynamically between registers, memory, and immediate generator outputs based on control unit signals.
+* **Branch Execution:** The branch target address (`PC + immediate`) is calculated in parallel with the ALU equality check (`zero` flag), seamlessly redirecting execution without bubbles.
+
+### Commands we used
+* Compile code: `iverilog -o sim_core.vvp program_counter.v instruction_memory.v instruction_decoder.v control_unit.v register_file.v alu.v data_memory.v riscv_core.v tb_riscv_core.v`
+* Run simulation: `vvp sim_core.vvp`
+* Open waveform viewer: `gtkwave waveform_core.vcd`

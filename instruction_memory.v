@@ -1,40 +1,33 @@
-// Same time scale, and it has to be common in all the codes without fail
+// same timescale
 `timescale 1ns / 1ps
-/* 
-An instruction memory is the acting ROM and it does the following
-    Whenever the PC outputs an address, this IM recieves the address, and then it looks inside the memory array and immediately splits it out into 32 bit instructions for the processor to decode.
-This instruction memory works as follows, will be said in the codes
-*/  
-module instruction_memory ( input wire [31:0] addr, output wire [31:0] instruction );
-    reg [31:0] memory [0:63]; // This is a array of 64 words, with 32 bits each !! (a word is a memory brew......)
-    // This part we are going to do addition
-    initial begin 
-        memory[0] = 32'h00500113; // addi x2, x0, 5 (Add immediately, and put 5 into the register x2)
-        memory[1] = 32'h00700193; // addi x3, x0, 7 (same as before, put value 7 into x3)
-        memory[2] = 32'h00310233; // add  x4, x2, x3 (Here add x2 and x4, and store it in x3)
-        memory[3] = 32'h00000013; // nop (Basically do nothing)
+// Hardware module for RISC-V Instruction ROM preloaded with full test program
+module instruction_memory (
+    // 32-bit address input coming directly from Program Counter
+    input  wire [31:0] addr,
+    // 32-bit machine code instruction output sent to Decoder
+    output wire [31:0] instruction
+);
+    // Array of 64 words with 32 bits each acting as ROM storage
+    reg [31:0] memory [0:63];
+    // Initial block to preload test assembly program in machine hex
+    initial begin
+        // Index 0 (Address 0x00): addi x1, x0, 10 (Load 10 into register x1)
+        memory[0] = 32'h00a00093;
+        // Index 1 (Address 0x04): addi x2, x0, 20 (Load 20 into register x2)
+        memory[1] = 32'h01400113;
+        // Index 2 (Address 0x08): add x3, x1, x2 (Calculate 10 + 20 = 30 and save in x3)
+        memory[2] = 32'h002081b3;
+        // Index 3 (Address 0x0C): sw x3, 0(x0) (Store value 30 from x3 into RAM address 0)
+        memory[3] = 32'h00302023;
+        // Index 4 (Address 0x10): lw x4, 0(x0) (Load value 30 from RAM address 0 into register x4)
+        memory[4] = 32'h00002203;
+        // Index 5 (Address 0x14): beq x3, x4, 8 (Since x3 == x4 == 30, branch ahead by 8 bytes to 0x1C)
+        memory[5] = 32'h00418463;
+        // Index 6 (Address 0x18): addi x5, x0, 99 (Must be SKIPPED by the branch, so x5 stays 0)
+        memory[6] = 32'h06300293;
+        // Index 7 (Address 0x1C): addi x6, x0, 42 (Branch landing target, loads 42 into register x6)
+        memory[7] = 32'h02a00313;
     end
-    assign instruction = memory[addr[31:2]]; // This part I know very well
-    /*
-    A memory address works as following
-    
-    Byte address 0  = Instruction 0
-    Byte address 4  = Instruction 1
-    Byte address 8  = Instruction 2
-    Byte address 12 = Instruction 3
-    
-    In binary, multiples of 4 always end in 00:
-    
-    0 in binary  = ...000000
-    4 in binary  = ...000100
-    8 in binary  = ...001000
-    12 in binary = ...001100
-    
-    Since the last is always ending with 00, we can strip the last two bits to get the following
-    In binary, dropping the last two bits ([31:2]) is the exact same thing as dividing by 4:
-    Address 0 (binary 0000) -> slice off last 2 bits -> Index 0 -> memory[0]
-    Address 4 (binary 0100) -> slice off last 2 bits -> Index 1 -> memory[1]
-    Address 8 (binary 1000) -> slice off last 2 bits -> Index 2 -> memory[2]
-    Address 12 (binary 1100) -> slice off last 2 bits -> Index 3 -> memory[3]
-    */
+    // Combinational read slicing off bottom 2 bits to convert byte address into word index
+    assign instruction = memory[addr[31:2]];
 endmodule
