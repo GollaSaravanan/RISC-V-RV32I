@@ -113,3 +113,24 @@ It gives engineers and students total freedom to build custom processors from sc
 * Compile code: `iverilog -o sim_alu.vvp alu.v tb_alu.v`
 * Run simulation: `vvp sim_alu.vvp`
 * Open waveform viewer: `gtkwave waveform_alu.vcd`
+
+---
+
+## Phase 6: Data Memory (RAM) - RISC-V Journey
+
+### What we did today
+* Built `data_memory.v` to manage read and write memory operations for Load/Store instructions.
+* Configured synchronous write logic on `posedge clk` gated by `mem_write`.
+* Configured asynchronous/combinational read logic gated by `mem_read`.
+* Mapped 32-bit word addresses to array indices using `addr[31:2]`.
+* Wrote `tb_data_memory.v` and verified storage and retrieval of test words (`0xDEADBEEF` and `0x12345678`) in GTKWave.
+
+### Key concepts we learned
+* **RAM vs ROM:** ROM (`instruction_memory`) is read-only and stores static code, whereas RAM (`data_memory`) dynamically stores and loads runtime program variables.
+* **Single-Cycle Timing Requirements:** Load instructions (`lw`) must calculate addresses, query RAM, and deliver data back to registers within a single clock cycle, requiring combinational reads. Writes modify architectural state and are kept synchronous on clock edges.
+* **Word Alignment:** Byte-addressed memory increments by 4, so dropping the lowest 2 address bits (`addr[31:2]`) maps byte addresses directly to 32-bit word slots in the array.
+
+### Commands we used
+* Compile code: `iverilog -o sim_dm.vvp data_memory.v tb_data_memory.v`
+* Run simulation: `vvp sim_dm.vvp`
+* Open waveform viewer: `gtkwave waveform_dm.vcd`
