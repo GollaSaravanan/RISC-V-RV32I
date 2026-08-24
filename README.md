@@ -16,16 +16,16 @@ It gives engineers and students total freedom to build custom processors from sc
 
 ## Phase 1: Program Counter (PC) - RISC-V Journey
 
-### What we did today
+### What we did
 * Got Icarus Verilog and GTKWave working on Windows and fixed the system PATH so commands run smoothly in the terminal.
 * Built our first hardware module (`program_counter.v`) for a 32-bit RISC-V Program Counter.
 * Wrote a testbench (`tb_program_counter.v`) to act as our virtual testing lab, handling the clock and reset signals.
-* Compiled everything via terminal, ran the simulation, and checked out the actual square wave signals in GTKWave.
+* Compiled everything via terminal, ran the simulation, and verified the output square wave signals in GTKWave.
 
 ### Key concepts we learned
 * **Hardware runs parallel:** Unlike normal programming (C or Python) where lines run one by one from top to bottom, physical circuits run everywhere at once. That is why we use non-blocking assignments (`<=`) inside clock blocks.
 * **Timescales:** Using `` `timescale 1ns / 1ps `` as a configuration instruction so the simulator knows our time units (nanoseconds and picoseconds).
-* **What a testbench is:** A virtual testing environment strictly for simulation (never goes onto actual silicon) that feeds fake inputs like clock pulses into our module and records everything into a `.vcd` file.
+* **What a testbench is:** A virtual testing environment strictly for simulation (never goes onto actual silicon) that feeds inputs like clock pulses into our module and records everything into a `.vcd` file.
 * **Posedge:** Short for positive edge. It means the register updates right when the clock signal jumps from low to high.
 
 ### Commands we used
@@ -37,7 +37,7 @@ It gives engineers and students total freedom to build custom processors from sc
 
 ## Phase 2: Instruction Memory (ROM) - RISC-V Journey
 
-### What we did today
+### What we did
 * Built our second module (`instruction_memory.v`), which acts as the processor's ROM storage.
 * Pre-loaded machine code instructions in hex into a 64-word memory array to run basic operations (`addi`, `add`, `nop`).
 * Handled word alignment and address indexing using bit-slicing.
@@ -57,7 +57,7 @@ It gives engineers and students total freedom to build custom processors from sc
 
 ## Phase 3: Register File - RISC-V Journey
 
-### What we did today
+### What we did
 * Built the core storage scratchpad (`register_file.v`) with 32 general-purpose registers (`x0` to `x31`).
 * Implemented dual asynchronous read ports (`rs1_data`, `rs2_data`) and a single synchronous write port (`rd_data`).
 * Hardwired register `x0` permanently to zero so that any write attempts to `x0` are discarded.
@@ -77,7 +77,7 @@ It gives engineers and students total freedom to build custom processors from sc
 
 ## Phase 4: Instruction Decoder & Immediate Generator - RISC-V Journey
 
-### What we did today
+### What we did
 * Built `instruction_decoder.v` to parse raw 32-bit instruction words into standard RISC-V control fields.
 * Extracted opcode, rd, funct3, rs1, rs2, and funct7 using fixed bit slicing.
 * Implemented sign-extension logic for I-Type, S-Type, B-Type, U-Type, and J-Type formats.
@@ -97,7 +97,7 @@ It gives engineers and students total freedom to build custom processors from sc
 
 ## Phase 5: Arithmetic Logic Unit (ALU) - RISC-V Journey
 
-### What we did today
+### What we did
 * Built `alu.v` to execute all RV32I mathematical, logical, shifting, and comparison operations.
 * Implemented a 4-bit ALU control code multiplexer to route operations based on instruction requirements.
 * Handled signed arithmetic shifts (`>>>`) and distinct signed (`SLT`) vs unsigned (`SLTU`) magnitude comparisons.
@@ -118,7 +118,7 @@ It gives engineers and students total freedom to build custom processors from sc
 
 ## Phase 6: Data Memory (RAM) - RISC-V Journey
 
-### What we did today
+### What we did
 * Built `data_memory.v` to manage read and write memory operations for Load/Store instructions.
 * Configured synchronous write logic on `posedge clk` gated by `mem_write`.
 * Configured asynchronous/combinational read logic gated by `mem_read`.
@@ -134,3 +134,23 @@ It gives engineers and students total freedom to build custom processors from sc
 * Compile code: `iverilog -o sim_dm.vvp data_memory.v tb_data_memory.v`
 * Run simulation: `vvp sim_dm.vvp`
 * Open waveform viewer: `gtkwave waveform_dm.vcd`
+
+---
+
+## Phase 7: Main Control Unit - RISC-V Journey
+
+### What we did
+* Built `control_unit.v` to decode opcodes, funct3, and funct7 fields into CPU control lines.
+* Routed multiplexer selectors (`alu_src`, `mem_to_reg`), RAM access flags (`mem_read`, `mem_write`), register write flags (`reg_write`), and branch enable lines (`branch`).
+* Integrated sub-operation decoding to select exact 4-bit ALU operations for R-Type and I-Type instructions.
+* Wrote `tb_control_unit.v` and verified control signal generation across all core instruction types in GTKWave.
+
+### Key concepts we learned
+* **The Brain of the CPU:** The Control Unit takes high-level instruction opcodes and coordinates which hardware blocks activate during each cycle.
+* **Multiplexer Control:** `alu_src` toggles whether the ALU computes on register data or immediate constants; `mem_to_reg` selects whether the ALU output or loaded memory data is written back to registers.
+* **Zero-Overhead Branch Setup:** Generates a `branch` control signal that combines with the ALU's `zero` flag to dynamically switch the Program Counter to branch target addresses.
+
+### Commands we used
+* Compile code: `iverilog -o sim_cu.vvp control_unit.v tb_control_unit.v`
+* Run simulation: `vvp sim_cu.vvp`
+* Open waveform viewer: `gtkwave waveform_cu.vcd`
